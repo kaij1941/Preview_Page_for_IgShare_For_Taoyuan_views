@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>桃園 IG 靈感地圖｜一頁式旅遊預覽(Edit By Jacky with ChatGPT)</title>
+  <meta name="description" content="整合桃園 Instagram Reels 與貼文的一頁式介紹網頁，可快速預覽、篩選並點進 Instagram 觀看完整內容。" />
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --paper: rgba(255,255,255,.82);
+      --paper-strong: #fffaf2;
+      --text: #241b14;
+      --muted: #75685f;
+      --line: rgba(59, 39, 24, .14);
+      --brand: #c06a3e;
+      --brand-2: #2f7d76;
+      --brand-3: #e0a745;
+      --shadow: 0 22px 65px rgba(67, 45, 28, .15);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(224,167,69,.28), transparent 34rem),
+        radial-gradient(circle at 90% 12%, rgba(47,125,118,.18), transparent 28rem),
+        linear-gradient(135deg, #fbf6ef 0%, var(--bg) 46%, #efe4d5 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.65;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 86vh;
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      align-items: center;
+      gap: 42px;
+      padding: 56px 0 34px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 34px -22px auto auto;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 1px solid rgba(192,106,62,.24);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+      color: var(--brand-2);
+      font-weight: 800;
+      letter-spacing: .06em;
+      font-size: 13px;
+      backdrop-filter: blur(12px);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 99px;
+      background: var(--brand-2);
+      box-shadow: 0 0 0 6px rgba(47,125,118,.12);
+    }
+
+    h1 {
+      margin: 22px 0 18px;
+      font-size: clamp(42px, 7vw, 92px);
+      line-height: .96;
+      letter-spacing: -.07em;
+    }
+
+    .accent { color: var(--brand); }
+
+    .lead {
+      margin: 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: clamp(17px, 2.1vw, 22px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      font-weight: 800;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      color: white;
+      background: linear-gradient(135deg, var(--brand), #da8b57);
+      box-shadow: 0 18px 35px rgba(192,106,62,.24);
+      border-color: rgba(192,106,62,.18);
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(67,45,28,.12); }
+
+    .hero-card {
+      position: relative;
+      border-radius: var(--radius-xl);
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,.65);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      top: -90px;
+      background: radial-gradient(circle, rgba(47,125,118,.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .photo-mosaic {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      z-index: 1;
+    }
+
+    .tile {
+      min-height: 174px;
+      border-radius: 26px;
+      padding: 18px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      isolation: isolate;
+      position: relative;
+      background: #333;
+    }
+
+    .tile:nth-child(1) {
+      grid-row: span 2;
+      min-height: 362px;
+      background:
+        linear-gradient(to top, rgba(0,0,0,.62), transparent 66%),
+        url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=80") center/cover;
+    }
+
+    .tile:nth-child(2) {
+      background:
+        linear-gradient(to top, rgba(0,0,0,.58), transparent 66%),
+        url("https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?auto=format&fit=crop&w=900&q=80") center/cover;
+    }
+
+    .tile:nth-child(3) {
+      background:
+        linear-gradient(to top, rgba(0,0,0,.58), transparent 66%),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80") center/cover;
+    }
+
+    .tile b { font-size: 22px; letter-spacing: -.02em; }
+    .tile span { opacity: .9; font-size: 14px; }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      border-radius: 20px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      padding: 16px;
+    }
+
+    .stat strong { display: block; font-size: 24px; line-height: 1; }
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    section { padding: 58px 0; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      margin-bottom: 26px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(30px, 4.6vw, 52px);
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .themes {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .theme {
+      min-height: 205px;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 35px rgba(67,45,28,.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .theme:hover { transform: translateY(-4px); box-shadow: 0 24px 50px rgba(67,45,28,.13); }
+
+    .theme .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: #fff2df;
+      font-size: 24px;
+    }
+
+    .theme h3 { margin: 18px 0 8px; font-size: 20px; }
+    .theme p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 12px;
+      border-radius: 999px;
+      background: rgba(255,250,242,.82);
+      border: 1px solid rgba(255,255,255,.75);
+      box-shadow: 0 14px 38px rgba(67,45,28,.1);
+      backdrop-filter: blur(18px);
+    }
+
+    .search {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      border-radius: 999px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.78);
+      font: inherit;
+      color: var(--text);
+    }
+
+    .filters { display: flex; gap: 8px; }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.68);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      color: white;
+      background: var(--brand-2);
+      border-color: rgba(47,125,118,.2);
+    }
+
+    .ig-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .ig-card {
+      border-radius: var(--radius-xl);
+      background: var(--paper-strong);
+      border: 1px solid rgba(255,255,255,.72);
+      box-shadow: 0 18px 48px rgba(67,45,28,.10);
+      overflow: hidden;
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .ig-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 26px 62px rgba(67,45,28,.15);
+    }
+
+    .ig-header {
+      padding: 18px 18px 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ig-title { margin: 0; font-size: 18px; line-height: 1.32; letter-spacing: -.02em; }
+
+    .badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: white;
+      background: linear-gradient(135deg, #d7497a, #f29b46);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .badge.post { background: linear-gradient(135deg, var(--brand-2), #7cb59b); }
+
+    .ig-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 18px 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(255,255,255,.68);
+    }
+
+    .embed-wrap {
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(192,106,62,.08), rgba(47,125,118,.07)),
+        repeating-linear-gradient(45deg, rgba(36,27,20,.025) 0 8px, transparent 8px 16px);
+      padding: 12px;
+    }
+
+    .instagram-media {
+      max-width: 100% !important;
+      min-width: 260px !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    .fallback {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .url {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .open-link {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      background: var(--text);
+      color: white;
+      padding: 10px 13px;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .note {
+      margin-top: 24px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(192,106,62,.35);
+      background: rgba(255,255,255,.58);
+      padding: 18px 20px;
+      color: var(--muted);
+    }
+
+    .itinerary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .route-card {
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      padding: 20px;
+      box-shadow: 0 14px 36px rgba(67,45,28,.08);
+    }
+
+    .route-card h3 { margin: 0 0 10px; font-size: 22px; }
+    .route-card p { margin: 0; color: var(--muted); }
+
+    footer {
+      padding: 36px 0 56px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1040px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .themes { grid-template-columns: repeat(2, 1fr); }
+      .ig-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .itinerary { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 24px, 1180px); }
+      .hero { padding-top: 30px; }
+      .photo-mosaic { grid-template-columns: 1fr; }
+      .tile:nth-child(1) { min-height: 260px; }
+      .quick-stats { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .themes, .ig-grid { grid-template-columns: 1fr; }
+      .toolbar { position: static; grid-template-columns: 1fr; border-radius: 24px; }
+      .filters { overflow: auto; padding-bottom: 2px; }
+      .embed-wrap { min-height: 360px; }
+      .fallback { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div>
+        <span class="eyebrow">TAOYUAN INSTAGRAM GUIDE</span>
+        <h1>桃園<br><span class="accent">一頁式</span><br>靈感地圖</h1>
+        <p class="lead">
+          把你收集的 Instagram Reels 與貼文整理成一個可預覽、可篩選、可點進觀看的桃園介紹頁。
+          適合拿來做行程靈感、約會路線、週末散步清單或社群分享頁。
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#instagram-wall">看 IG 預覽牆 →</a>
+          <a class="btn" href="#themes">桃園主題介紹</a>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="桃園旅遊主題卡片">
+        <div class="photo-mosaic">
+          <div class="tile"><b>山線自然</b><span>小烏來、拉拉山、北橫風景</span></div>
+          <div class="tile"><b>城市生活</b><span>中壢、桃園、青埔商圈</span></div>
+          <div class="tile"><b>老街與美食</b><span>大溪、夜市、客家文化</span></div>
+        </div>
+        <div class="quick-stats">
+          <div class="stat"><strong>19</strong><span>則 IG 內容</span></div>
+          <div class="stat"><strong>5</strong><span>種桃園主題</span></div>
+          <div class="stat"><strong>1</strong><span>頁快速瀏覽</span></div>
+        </div>
+      </aside>
+    </header>
+
+    <section id="themes">
+      <div class="section-head">
+        <h2>桃園可以這樣玩</h2>
+        <p>桃園不是只有機場。它很適合拆成幾種不同節奏：想逛街、想看山、想吃老街、想拍海邊、想找城市感，都能各自成行。</p>
+      </div>
+
+      <div class="themes">
+        <article class="theme">
+          <div><div class="icon">🚇</div><h3>機捷與青埔</h3><p>適合半日輕行程，逛街、咖啡、展館、Outlet 都能安排。</p></div>
+        </article>
+        <article class="theme">
+          <div><div class="icon">🏮</div><h3>大溪老街</h3><p>老街、豆干、巴洛克立面與河階地形，是桃園最有記憶點的文化路線。</p></div>
+        </article>
+        <article class="theme">
+          <div><div class="icon">🌊</div><h3>海線與漁港</h3><p>竹圍、新屋、永安一帶，適合看海、吃海鮮、騎車散步。</p></div>
+        </article>
+        <article class="theme">
+          <div><div class="icon">⛰️</div><h3>北橫山線</h3><p>小烏來、角板山、拉拉山，適合安排成遠一點的放空行程。</p></div>
+        </article>
+        <article class="theme">
+          <div><div class="icon">🍜</div><h3>夜市與小吃</h3><p>中壢、桃園夜市與各區在地小吃，適合用 IG 影片當美食索引。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="instagram-wall">
+      <div class="section-head">
+        <h2>IG 預覽牆</h2>
+        <p>每張卡片都有「預覽頁標題」、內容類型與可點擊連結。若 Instagram 嵌入預覽載入失敗，仍可用右下角按鈕直接開啟原文。</p>
+      </div>
+
+      <div class="toolbar" aria-label="Instagram 內容篩選工具列">
+        <input id="searchInput" class="search" type="search" placeholder="搜尋：Reel、貼文、桃園、行程、靈感…" />
+        <div class="filters" role="tablist" aria-label="類型篩選">
+          <button class="chip active" data-filter="all" type="button">全部</button>
+          <button class="chip" data-filter="reel" type="button">Reels</button>
+          <button class="chip" data-filter="post" type="button">貼文</button>
+        </div>
+      </div>
+
+      <div id="igGrid" class="ig-grid"></div>
+
+      <div class="note">
+        小提醒：Instagram 嵌入預覽會受到帳號公開狀態、瀏覽器隱私設定、第三方 Cookie 與網路環境影響。這份頁面已保留備援連結，所以就算預覽沒出現，也能直接點進 IG 觀看。
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    桃園 IG 靈感地圖｜可自行修改標題、分類與行程說明
+  </footer>
+
+  <script>
+    const posts = [
+      { title: "桃園 IG 預覽 01｜Reel 靈感短片", type: "reel", code: "Cwwt3ravdj4", url: "https://www.instagram.com/reel/Cwwt3ravdj4/", tags: ["桃園", "Reel", "行程靈感"] },
+      { title: "桃園 IG 預覽 02｜Reel 靈感短片", type: "reel", code: "DHqhuFwy7hm", url: "https://www.instagram.com/reel/DHqhuFwy7hm/", tags: ["桃園", "Reel", "景點"] },
+      { title: "桃園 IG 預覽 03｜Reel 靈感短片", type: "reel", code: "CyUr899PzJ_", url: "https://www.instagram.com/reel/CyUr899PzJ_/", tags: ["桃園", "Reel", "收藏"] },
+      { title: "桃園 IG 預覽 04｜Reel 靈感短片", type: "reel", code: "DTxgv57ibmO", url: "https://www.instagram.com/reel/DTxgv57ibmO/", tags: ["桃園", "Reel", "週末"] },
+      { title: "桃園 IG 預覽 05｜Reel 靈感短片", type: "reel", code: "DNTCS0NyloQ", url: "https://www.instagram.com/reel/DNTCS0NyloQ/", tags: ["桃園", "Reel", "熱門"] },
+      { title: "桃園 IG 預覽 06｜Reel 靈感短片", type: "reel", code: "DV5_j-LEZEF", url: "https://www.instagram.com/reel/DV5_j-LEZEF/", tags: ["桃園", "Reel", "美食"] },
+      { title: "桃園 IG 預覽 07｜貼文收藏", type: "post", code: "DCnc152z9Ri", url: "https://www.instagram.com/p/DCnc152z9Ri/", tags: ["桃園", "貼文", "照片"] },
+      { title: "桃園 IG 預覽 08｜貼文收藏", type: "post", code: "DEXNdEQMOb2", url: "https://www.instagram.com/p/DEXNdEQMOb2/", tags: ["桃園", "貼文", "路線"] },
+      { title: "桃園 IG 預覽 09｜貼文收藏", type: "post", code: "DQT2376DyMt", url: "https://www.instagram.com/p/DQT2376DyMt/", tags: ["桃園", "貼文", "打卡"] },
+      { title: "桃園 IG 預覽 10｜貼文收藏", type: "post", code: "CUJxvs3ldcH", url: "https://www.instagram.com/p/CUJxvs3ldcH/", tags: ["桃園", "貼文", "經典"] },
+      { title: "桃園 IG 預覽 11｜Reel 靈感短片", type: "reel", code: "DGuTefSyjel", url: "https://www.instagram.com/reel/DGuTefSyjel/", tags: ["桃園", "Reel", "短影音"] },
+      { title: "桃園 IG 預覽 12｜Reel 靈感短片", type: "reel", code: "DUnQ5LigYgh", url: "https://www.instagram.com/reel/DUnQ5LigYgh/", tags: ["桃園", "Reel", "推薦"] },
+      { title: "桃園 IG 預覽 13｜貼文收藏", type: "post", code: "DRHQHZTEk-h", url: "https://www.instagram.com/p/DRHQHZTEk-h/", tags: ["桃園", "貼文", "收藏"] },
+      { title: "桃園 IG 預覽 14｜Reel 靈感短片", type: "reel", code: "DK63lqmzEI2", url: "https://www.instagram.com/reel/DK63lqmzEI2/", tags: ["桃園", "Reel", "景點"] },
+      { title: "桃園 IG 預覽 15｜Reel 靈感短片", type: "reel", code: "C9Rz19Att_6", url: "https://www.instagram.com/reel/C9Rz19Att_6/", tags: ["桃園", "Reel", "旅行"] },
+      { title: "桃園 IG 預覽 16｜Reel 靈感短片", type: "reel", code: "DWn-2EbEpWX", url: "https://www.instagram.com/reel/DWn-2EbEpWX/", tags: ["桃園", "Reel", "新收藏"] },
+      { title: "桃園 IG 預覽 17｜Reel 靈感短片", type: "reel", code: "DWte1qTkixF", url: "https://www.instagram.com/reel/DWte1qTkixF/", tags: ["桃園", "Reel", "新收藏"] },
+      { title: "桃園 IG 預覽 18｜Reel 靈感短片", type: "reel", code: "DV3nxpuggwt", url: "https://www.instagram.com/reel/DV3nxpuggwt/", tags: ["桃園", "Reel", "行程"] },
+      { title: "桃園 IG 預覽 19｜貼文收藏", type: "post", code: "DWbSlM6k3vW", url: "https://www.instagram.com/p/DWbSlM6k3vW/", tags: ["桃園", "貼文", "照片"] }
+    ];
+
+    const grid = document.getElementById("igGrid");
+    const searchInput = document.getElementById("searchInput");
+    const chips = [...document.querySelectorAll(".chip")];
+    let activeFilter = "all";
+
+    function renderCards() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const filtered = posts.filter(post => {
+        const matchType = activeFilter === "all" || post.type === activeFilter;
+        const text = `${post.title} ${post.type} ${post.code} ${post.tags.join(" ")}`.toLowerCase();
+        const matchKeyword = !keyword || text.includes(keyword);
+        return matchType && matchKeyword;
+      });
+
+      grid.innerHTML = filtered.map((post, index) => `
+        <article class="ig-card" data-type="${post.type}">
+          <div class="ig-header">
+            <h3 class="ig-title">${post.title}</h3>
+            <span class="badge ${post.type === "post" ? "post" : ""}">${post.type === "post" ? "POST" : "REEL"}</span>
+          </div>
+          <div class="ig-meta">
+            ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join("")}
+          </div>
+          <div class="embed-wrap">
+            <blockquote class="instagram-media" data-instgrm-permalink="${post.url}" data-instgrm-version="14">
+              <a href="${post.url}" target="_blank" rel="noopener">在 Instagram 查看 ${post.title}</a>
+            </blockquote>
+          </div>
+          <div class="fallback">
+            <span class="url">${post.url}</span>
+            <a class="open-link" href="${post.url}" target="_blank" rel="noopener">開啟觀看 ↗</a>
+          </div>
+        </article>
+      `).join("");
+
+      setTimeout(() => {
+        if (window.instgrm && window.instgrm.Embeds) {
+          window.instgrm.Embeds.process();
+        }
+      }, 120);
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        activeFilter = chip.dataset.filter;
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        renderCards();
+      });
+    });
+
+    searchInput.addEventListener("input", renderCards);
+    renderCards();
+  </script>
+  <script async src="https://www.instagram.com/embed.js"></script>
+</body>
+</html>
