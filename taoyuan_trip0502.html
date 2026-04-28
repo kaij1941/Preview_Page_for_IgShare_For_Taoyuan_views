@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>桃園山海美學一日遊｜手機導航版</title>
+  <meta name="description" content="板橋出發的桃園山線、市區、海岸、大溪老街一日遊。含景點、餐飲、停車、Google Maps 一鍵導航與 RWD 手機閱讀版面。" />
+  <style>
+    :root {
+      --bg: #f7f2ea;
+      --paper: #fffdf8;
+      --paper-2: #fff8ef;
+      --ink: #2f2a24;
+      --muted: #776c60;
+      --line: rgba(47, 42, 36, .12);
+      --accent: #b97045;
+      --accent-2: #315b4b;
+      --accent-3: #d7a55f;
+      --danger: #9b4a43;
+      --ok: #407f5b;
+      --radius: 22px;
+      --shadow: 0 14px 38px rgba(62, 45, 28, .12);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(215, 165, 95, .18), transparent 32rem),
+        linear-gradient(135deg, #f7f2ea 0%, #f4eadc 42%, #eef3ed 100%);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 116px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      background:
+        linear-gradient(135deg, rgba(49, 91, 75, .95), rgba(185, 112, 69, .88)),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80") center / cover;
+      color: #fff;
+      padding: clamp(28px, 6vw, 64px);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -45% 35%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(255,255,255,.26), transparent 68%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      letter-spacing: .04em;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      max-width: 780px;
+      font-size: clamp(32px, 7vw, 68px);
+      line-height: .98;
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 0 24px;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(15px, 2vw, 18px);
+    }
+
+    .hero-actions, .card-actions, .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      box-shadow: 0 8px 18px rgba(62, 45, 28, .08);
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(62, 45, 28, .12); }
+    .btn.primary { background: #fff; color: #214337; border-color: transparent; font-weight: 750; }
+    .btn.dark { background: var(--accent-2); color: #fff; border-color: transparent; }
+    .btn.warn { background: #fff6e5; color: #79511b; }
+    .btn.ghost { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.3); box-shadow: none; }
+    .btn.small { min-height: 38px; padding: 8px 12px; font-size: 13px; }
+
+    .section {
+      margin-top: 22px;
+      background: rgba(255,253,248,.72);
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 24px 24px 12px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 34px);
+      letter-spacing: -.02em;
+    }
+
+    .section .hint {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-grid, .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 0 24px 24px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 20px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .stat b { display: block; font-size: 22px; }
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin-top: 16px;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(247,242,234,.82);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(62, 45, 28, .08);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+
+    .chip {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.68);
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip.active { background: var(--ink); color: #fff; border-color: transparent; }
+
+    .search {
+      width: min(300px, 38vw);
+      min-height: 38px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.82);
+      outline: none;
+    }
+
+    .timeline {
+      padding: 4px 24px 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 82px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+    }
+
+    .time {
+      display: grid;
+      place-items: center;
+      min-height: 58px;
+      border-radius: 18px;
+      background: var(--paper-2);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .timeline-title { font-weight: 800; }
+    .timeline-meta { color: var(--muted); font-size: 13px; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 6px 24px 26px;
+    }
+
+    .place-card {
+      display: grid;
+      grid-template-rows: auto 250px auto;
+      overflow: hidden;
+      min-height: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 12px 30px rgba(62, 45, 28, .07);
+    }
+
+    .place-body { padding: 18px; }
+    .place-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .zone {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f3eadc;
+      color: #79511b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .badge.ok { color: var(--ok); background: rgba(64,127,91,.1); }
+    .badge.warn { color: #946111; background: rgba(215,165,95,.16); }
+
+    .place-title {
+      margin: 0;
+      font-size: clamp(20px, 2.4vw, 28px);
+      line-height: 1.18;
+      letter-spacing: -.02em;
+    }
+
+    .desc { color: var(--muted); margin: 10px 0 0; }
+
+    .info-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .info {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 16px;
+      background: #fbf6ed;
+      border: 1px solid rgba(47,42,36,.08);
+      font-size: 14px;
+    }
+    .info-label { color: var(--muted); font-weight: 700; }
+    .copy {
+      border: 0;
+      color: var(--accent-2);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .map-frame {
+      width: 100%;
+      height: 250px;
+      border: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #eadfce;
+    }
+
+    .place-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 18px 18px;
+    }
+
+    .note-box {
+      margin: 0 24px 24px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px dashed rgba(185,112,69,.4);
+      background: rgba(255,248,239,.82);
+      color: #5f4f3f;
+    }
+
+    .souvenir-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 6px 24px 26px;
+    }
+
+    .souvenir {
+      padding: 18px;
+      border-radius: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .souvenir h3 { margin: 0 0 8px; font-size: 22px; }
+    .souvenir p { margin: 0 0 14px; color: var(--muted); }
+
+    .bottom-nav {
+      position: fixed;
+      z-index: 30;
+      left: 50%;
+      bottom: calc(12px + var(--safe-bottom));
+      transform: translateX(-50%);
+      width: min(760px, calc(100% - 24px));
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-radius: 24px;
+      background: rgba(47,42,36,.88);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,.22);
+    }
+
+    .bottom-nav a {
+      display: grid;
+      place-items: center;
+      min-height: 48px;
+      border-radius: 16px;
+      color: rgba(255,255,255,.86);
+      font-size: 13px;
+      background: rgba(255,255,255,.08);
+    }
+    .bottom-nav a strong { display: block; font-size: 18px; line-height: 1; }
+
+    .toast {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      bottom: calc(88px + var(--safe-bottom));
+      transform: translateX(-50%) translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      transition: .2s ease;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 880px) {
+      .app { width: min(100% - 20px, 760px); padding-top: 12px; }
+      .hero { border-radius: 24px; }
+      .toolbar { border-radius: 22px; align-items: stretch; flex-direction: column; }
+      .search { width: 100%; }
+      .status-grid, .summary-grid, .cards, .souvenir-grid { grid-template-columns: 1fr; padding-left: 14px; padding-right: 14px; }
+      .section-head { padding: 20px 14px 10px; }
+      .timeline { padding: 4px 14px 18px; }
+      .timeline-item { grid-template-columns: 70px 1fr; }
+      .timeline-item .btn { grid-column: 1 / -1; width: 100%; }
+      .place-card { grid-template-rows: auto 210px auto; }
+      .map-frame { height: 210px; }
+      .info { grid-template-columns: 56px 1fr; }
+      .info .copy { grid-column: 2; justify-self: start; }
+      .bottom-nav { grid-template-columns: repeat(4, 1fr); }
+      .bottom-nav span { display: none; }
+      .btn { width: 100%; }
+      .hero-actions .btn, .quick-row .btn { width: auto; flex: 1 1 auto; }
+    }
+
+    @media (max-width: 520px) {
+      .hero { padding: 26px 20px; }
+      .status-grid { gap: 8px; }
+      .stat { padding: 13px; }
+      .place-actions { display: grid; grid-template-columns: 1fr; }
+      .quick-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .quick-row .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero" id="top">
+      <span class="eyebrow">🚗 板橋出發・桃園山海美學一日遊</span>
+      <h1>桃園山線、市區、海岸與大溪老街，一頁搞定。</h1>
+      <p>把行程、地址、停車點與 Google Maps 導航整理成手機友善卡片。每個區域都能獨立查詢，也能直接按「導航」開啟 Google Maps。</p>
+      <div class="hero-actions">
+        <a class="btn primary" id="fullRouteBtn" target="_blank" rel="noopener">🧭 開啟全日路線</a>
+        <a class="btn ghost" href="#places">📍 查看分區卡片</a>
+        <button class="btn ghost" id="copyAllBtn">📋 複製全部地址</button>
+      </div>
+    </header>
+
+    <section class="section" id="overview">
+      <div class="section-head">
+        <div>
+          <h2>今日節奏</h2>
+          <p class="hint">建議把這頁加到手機主畫面，當成當天導航清單。</p>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="stat"><b>10:00</b><span>板橋出發，台三線接大溪</span></div>
+        <div class="stat"><b>5 區</b><span>山線、午餐、市區、海岸、大溪</span></div>
+        <div class="stat"><b>2 點</b><span>餐飲店名需出發前再確認</span></div>
+        <div class="stat"><b>20:45</b><span>啟程回板橋，國道三號</span></div>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <nav class="toolbar" aria-label="分區篩選">
+      <div class="filters" id="filters"></div>
+      <input class="search" id="searchInput" placeholder="搜尋：停車、夕陽、豆干…" />
+    </nav>
+
+    <section class="section" id="places">
+      <div class="section-head">
+        <div>
+          <h2>分區即查卡片</h2>
+          <p class="hint">每張卡片都有景點地址、停車地址、Google Maps 預覽與一鍵導航。</p>
+        </div>
+      </div>
+      <div class="note-box">
+        <strong>出發前提醒：</strong>「食。物 Zhuowu」與「宛月 Wanyue」目前沒有穩定公開地址可完全核對，已標記為待確認；頁面仍保留 Google Maps 搜尋與可替代點，避免當天導錯。
+      </div>
+      <div class="cards" id="placeCards"></div>
+    </section>
+
+    <section class="section" id="souvenirs">
+      <div class="section-head">
+        <div>
+          <h2>伴手禮與收尾</h2>
+          <p class="hint">大溪老街附近可順手帶，適合放在晚餐前後。</p>
+        </div>
+      </div>
+      <div class="souvenir-grid" id="souvenirCards"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="手機快捷列">
+    <a href="#overview"><strong>⏱️</strong><span>行程</span></a>
+    <a href="#places"><strong>📍</strong><span>地點</span></a>
+    <a id="nearestParkingBtn" target="_blank" rel="noopener"><strong>🅿️</strong><span>停車</span></a>
+    <a href="#souvenirs"><strong>🎁</strong><span>伴手</span></a>
+  </nav>
+
+  <div class="toast" id="toast">已複製</div>
+
+  <script>
+    const mapSearch = (query) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    const mapDir = (query) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}&travelmode=driving`;
+    const mapEmbed = (query) => `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+
+    const places = [
+      {
+        id: "bridge",
+        time: "11:20",
+        zone: "山線",
+        icon: "🌉",
+        title: "新溪口吊橋",
+        status: "已核對",
+        verified: true,
+        address: "桃園市復興區澤仁里中山路8號",
+        parking: "角板端：介壽國中停車場／仁愛停車場；溪口端：部落市集停車場",
+        parkingQuery: "介壽國中停車場 桃園市復興區",
+        mapQuery: "新溪口吊橋 桃園市復興區澤仁里中山路8號",
+        desc: "全台最長懸索橋之一，大漢溪谷景色開闊。建議先停角板端，再依現場動線進入。",
+        food: "角板山水蜜桃冰沙、原民風味小吃可作為短暫補給。",
+        note: "山區景點建議出發前確認開放公告與天氣。"
+      },
+      {
+        id: "lunch",
+        time: "13:00",
+        zone: "午餐",
+        icon: "🍴",
+        title: "午餐：食。物 Zhuowu／北橫之驛備案",
+        status: "待確認",
+        verified: false,
+        address: "原規劃：桃園市大溪區復興路二段附近；備案：桃園市大溪區復興路一段896號",
+        parking: "建議導航餐廳名稱，依現場停車場或路邊白線停放；若改北橫之驛，可直接導航店址。",
+        parkingQuery: "北橫之驛 x 陳和興商號 停車 桃園市大溪區復興路一段896號",
+        mapQuery: "食。物 Zhuowu 桃園 大溪 復興路二段",
+        backupQuery: "北橫之驛 x 陳和興商號 桃園市大溪區復興路一段896號",
+        desc: "原本設定為森林系木質調米食餐廳；因公開資料不穩，建議出發前先點開 Google Maps 確認。備案可用北橫之驛。",
+        food: "米飯套餐、漢堡排飯、拌飯；備案可選玻璃屋景觀餐飲。",
+        note: "這張卡片刻意保留原規劃與可導航備案，避免當天找不到店。"
+      },
+      {
+        id: "library",
+        time: "15:00",
+        zone: "市區",
+        icon: "📚",
+        title: "桃園市立圖書館總館／蔦屋書店",
+        status: "已核對",
+        verified: true,
+        address: "桃園市桃園區南平路303號",
+        parking: "桃園市立圖書館總館停車場：桃園市桃園區南平路301號",
+        parkingQuery: "桃園市立圖書館總館停車場 桃園市桃園區南平路301號",
+        mapQuery: "桃園市立圖書館總館 桃園市桃園區南平路303號",
+        desc: "城市建築感最強的一站，適合拍建築線條、室內書店與藝文特區散步。",
+        food: "可銜接藝文特區周邊飲品或咖啡。",
+        note: "地下停車場最方便，假日可準備南平運動中心停車場作備案。"
+      },
+      {
+        id: "tea",
+        time: "16:00",
+        zone: "午茶",
+        icon: "🧋",
+        title: "午茶：宛月 Wanyue",
+        status: "待確認",
+        verified: false,
+        address: "桃園市桃園區新埔六街一帶（店名與門牌需出發前確認）",
+        parking: "可停桃園市立圖書館總館停車場或藝文特區周邊收費停車場，步行前往。",
+        parkingQuery: "桃園市立圖書館總館停車場 桃園市桃園區南平路301號",
+        mapQuery: "宛月 Wanyue 桃園 新埔六街",
+        desc: "原設定為極簡侘寂風職人茶飲，可作為圖書館後的手持飲品與外拍道具。",
+        food: "熟成奶茶、珍珠、茶底風味飲品。",
+        note: "店名公開資料不穩，建議點開 Google Maps 查看是否有營業資訊與評論。"
+      },
+      {
+        id: "pig-nose",
+        time: "17:00",
+        zone: "海岸",
+        icon: "🌊",
+        title: "豬鼻子沙灘",
+        status: "已核對",
+        verified: true,
+        address: "桃園市大園區；導航設定「豬鼻子沙灘」",
+        parking: "建議停竹圍漁港免費停車場或沙丘側合法白線，再步行前往；不建議硬開進狹小入口。",
+        parkingQuery: "竹圍漁港停車場 桃園市大園區",
+        mapQuery: "豬鼻子沙灘 桃園市大園區",
+        desc: "方形消波塊像豬鼻子，適合快拍怪奇可愛感照片。海邊風大，穿搭與髮型要預留容錯。",
+        food: "可順路看竹圍漁港，但本行程重點是快拍，不建議久停。",
+        note: "入口窄、會車不易，停遠一點步行通常比較穩。"
+      },
+      {
+        id: "wave-ladder",
+        time: "17:40",
+        zone: "海岸",
+        icon: "🌅",
+        title: "逐浪天梯",
+        status: "已核對",
+        verified: true,
+        address: "桃園市新屋區藻礁路；後湖溪出海口一帶",
+        parking: "後湖溪生態園區／台61橋下停車空間／永安漁港作備案",
+        parkingQuery: "後湖溪生態園區 桃園市新屋區",
+        mapQuery: "逐浪天梯 桃園市新屋區藻礁路",
+        desc: "純白階梯延伸向海，是這天的夕陽主畫面。建議抓日落前 30–45 分鐘抵達。",
+        food: "無餐飲重點，以夕陽與散步為主。",
+        note: "近期熱門且路幅狹窄，假日請優先停外圍停車點後步行。"
+      },
+      {
+        id: "daxi-dinner",
+        time: "19:00",
+        zone: "大溪",
+        icon: "🍛",
+        title: "晚餐：草店尾事務所 2.0／大溪老街",
+        status: "已核對",
+        verified: true,
+        address: "桃園市大溪區普濟路76號1樓",
+        parking: "月眉停車場：桃園市大溪區月眉里98號附近；可步行經大溪橋入老街",
+        parkingQuery: "月眉停車場 桃園市大溪區月眉里98號",
+        mapQuery: "草店尾事務所2.0 桃園市大溪區普濟路76號1樓",
+        desc: "老城區收尾站，晚餐後可走大溪橋、老街與巷弄。若原店客滿，可改大溪老街周邊咖哩、炊飯或老宅餐廳。",
+        food: "咖哩飯、炊飯、甜點咖啡；可搭配豆干伴手禮。",
+        note: "草店尾舊址與新址可能混淆，建議以 Google Maps 最新店家資訊為準。"
+      },
+      {
+        id: "home",
+        time: "20:45",
+        zone: "返程",
+        icon: "🏠",
+        title: "啟程回板橋",
+        status: "路線",
+        verified: true,
+        address: "板橋車站／板橋區",
+        parking: "—",
+        parkingQuery: "板橋車站",
+        mapQuery: "板橋車站",
+        desc: "從大溪接國道三號回板橋，預估 40–50 分鐘，實際依當晚車流調整。",
+        food: "回程前可先買大房豆干、杏芳乳酪球。",
+        note: "若海線停留太久，晚餐可簡化成大溪老街周邊快速用餐。"
+      }
+    ];
+
+    const souvenirs = [
+      {
+        title: "大房豆干",
+        desc: "老牌大溪豆干，適合送禮或當隔天小菜。推薦找精緻包裝系列。",
+        address: "桃園市大溪區中正路46號",
+        mapQuery: "大房豆干 桃園市大溪區中正路46號"
+      },
+      {
+        title: "杏芳食品店",
+        desc: "大溪老店，乳酪球、布朗尼常被當作伴手禮選項。",
+        address: "桃園市大溪區中央路127號",
+        mapQuery: "杏芳食品店 桃園市大溪區中央路127號"
+      }
+    ];
+
+    const zones = ["全部", ...Array.from(new Set(places.map(p => p.zone)))];
+    let currentZone = "全部";
+
+    const fullRoute = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent("板橋車站")}&destination=${encodeURIComponent("板橋車站")}&travelmode=driving&waypoints=${encodeURIComponent([
+      "新溪口吊橋 桃園市復興區澤仁里中山路8號",
+      "北橫之驛 x 陳和興商號 桃園市大溪區復興路一段896號",
+      "桃園市立圖書館總館 桃園市桃園區南平路303號",
+      "豬鼻子沙灘 桃園市大園區",
+      "逐浪天梯 桃園市新屋區藻礁路",
+      "草店尾事務所2.0 桃園市大溪區普濟路76號1樓"
+    ].join("|"))}`;
+
+    document.getElementById("fullRouteBtn").href = fullRoute;
+    document.getElementById("nearestParkingBtn").href = mapSearch("附近停車場");
+
+    function renderFilters() {
+      const el = document.getElementById("filters");
+      el.innerHTML = zones.map(zone => `
+        <button class="chip ${zone === currentZone ? "active" : ""}" data-zone="${zone}">${zone}</button>
+      `).join("");
+      el.querySelectorAll(".chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentZone = btn.dataset.zone;
+          renderFilters();
+          renderCards();
+        });
+      });
+    }
+
+    function renderTimeline() {
+      const el = document.getElementById("timeline");
+      el.innerHTML = places.map(p => `
+        <article class="timeline-item">
+          <div class="time">${p.time}</div>
+          <div>
+            <div class="timeline-title">${p.icon} ${p.title}</div>
+            <div class="timeline-meta">${p.zone}｜${p.address}</div>
+          </div>
+          <a class="btn small dark" target="_blank" rel="noopener" href="${mapDir(p.mapQuery)}">導航</a>
+        </article>
+      `).join("");
+    }
+
+    function renderCards() {
+      const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filtered = places.filter(p => {
+        const zoneMatch = currentZone === "全部" || p.zone === currentZone;
+        const text = `${p.title} ${p.zone} ${p.address} ${p.parking} ${p.desc} ${p.food} ${p.note}`.toLowerCase();
+        return zoneMatch && (!keyword || text.includes(keyword));
+      });
+
+      document.getElementById("placeCards").innerHTML = filtered.map(p => `
+        <article class="place-card" id="${p.id}">
+          <div class="place-body">
+            <div class="place-top">
+              <span class="zone">${p.icon} ${p.zone}</span>
+              <span class="badge ${p.verified ? "ok" : "warn"}">${p.verified ? "✅ 已核對" : "⚠️ 待確認"}</span>
+            </div>
+            <h3 class="place-title">${p.title}</h3>
+            <p class="desc">${p.desc}</p>
+            <div class="info-list">
+              <div class="info">
+                <div class="info-label">地址</div>
+                <div>${p.address}</div>
+                <button class="copy" data-copy="${escapeHtml(p.address)}">複製</button>
+              </div>
+              <div class="info">
+                <div class="info-label">停車</div>
+                <div>${p.parking}</div>
+                <button class="copy" data-copy="${escapeHtml(p.parking)}">複製</button>
+              </div>
+              <div class="info">
+                <div class="info-label">重點</div>
+                <div>${p.food}</div>
+                <button class="copy" data-copy="${escapeHtml(p.food)}">複製</button>
+              </div>
+            </div>
+          </div>
+          <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${mapEmbed(p.mapQuery)}" title="${p.title} Google Maps 預覽"></iframe>
+          <div class="place-actions">
+            <a class="btn dark" target="_blank" rel="noopener" href="${mapDir(p.mapQuery)}">🧭 導航到地點</a>
+            <a class="btn" target="_blank" rel="noopener" href="${mapDir(p.parkingQuery)}">🅿️ 導航到停車</a>
+            <a class="btn" target="_blank" rel="noopener" href="${mapSearch(p.mapQuery)}">🔎 Google Maps</a>
+            ${p.backupQuery ? `<a class="btn warn" target="_blank" rel="noopener" href="${mapDir(p.backupQuery)}">✅ 導航備案</a>` : ""}
+          </div>
+        </article>
+      `).join("");
+
+      bindCopyButtons();
+    }
+
+    function renderSouvenirs() {
+      document.getElementById("souvenirCards").innerHTML = souvenirs.map(s => `
+        <article class="souvenir">
+          <h3>🎁 ${s.title}</h3>
+          <p>${s.desc}</p>
+          <div class="info-list">
+            <div class="info">
+              <div class="info-label">地址</div>
+              <div>${s.address}</div>
+              <button class="copy" data-copy="${escapeHtml(s.address)}">複製</button>
+            </div>
+          </div>
+          <div class="card-actions" style="margin-top:14px">
+            <a class="btn dark" target="_blank" rel="noopener" href="${mapDir(s.mapQuery)}">🧭 導航</a>
+            <a class="btn" target="_blank" rel="noopener" href="${mapSearch(s.mapQuery)}">🔎 地圖</a>
+          </div>
+        </article>
+      `).join("");
+      bindCopyButtons();
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>'"]/g, tag => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+      }[tag]));
+    }
+
+    function showToast(text = "已複製") {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("已複製");
+      } catch (_) {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+        showToast("已複製");
+      }
+    }
+
+    function bindCopyButtons() {
+      document.querySelectorAll(".copy").forEach(btn => {
+        btn.onclick = () => copyText(btn.dataset.copy || "");
+      });
+    }
+
+    document.getElementById("copyAllBtn").addEventListener("click", () => {
+      const text = [
+        "桃園山海美學一日遊地址清單",
+        ...places.map(p => `${p.time}｜${p.title}\n地址：${p.address}\n停車：${p.parking}\n地圖：${mapSearch(p.mapQuery)}`),
+        "伴手禮",
+        ...souvenirs.map(s => `${s.title}\n地址：${s.address}\n地圖：${mapSearch(s.mapQuery)}`)
+      ].join("\n\n");
+      copyText(text);
+    });
+
+    document.getElementById("searchInput").addEventListener("input", renderCards);
+
+    renderFilters();
+    renderTimeline();
+    renderCards();
+    renderSouvenirs();
+  </script>
+</body>
+</html>
