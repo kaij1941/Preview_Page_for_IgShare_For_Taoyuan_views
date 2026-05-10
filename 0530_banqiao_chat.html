@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>0530 Banqiao Chat</title>
+  <style>
+    :root {
+      --bg: #f7f3ec;
+      --card: #fffaf2;
+      --ink: #2f2923;
+      --muted: #74685d;
+      --line: #e8dccb;
+      --accent: #9a6b43;
+      --accent-dark: #704728;
+      --soft: #efe3d2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(154, 107, 67, 0.16), transparent 34rem),
+        linear-gradient(135deg, #fbf7f0 0%, #f3eadc 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      padding: 36px 28px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(255, 250, 242, 0.88);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 18px 45px rgba(70, 45, 25, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-dark);
+      background: var(--soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: 0.02em;
+      line-height: 1.12;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 760px;
+      margin: 14px 0 0;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 22px 0 28px;
+    }
+
+    .summary a {
+      text-decoration: none;
+      color: inherit;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 250, 242, 0.72);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .summary a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 35px rgba(70, 45, 25, 0.10);
+    }
+
+    .summary strong {
+      display: block;
+      font-size: 1.05rem;
+    }
+
+    .summary span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--card);
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 20px 45px rgba(70, 45, 25, 0.08);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      display: inline-block;
+      color: white;
+      background: var(--accent);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .pill {
+      white-space: nowrap;
+      background: #f0e1cf;
+      color: var(--accent-dark);
+      border: 1px solid #decab2;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .info-grid > div {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .label {
+      display: block;
+      color: var(--accent-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .info-grid p {
+      margin: 0;
+    }
+
+    .vibe {
+      margin: 18px 0;
+      padding: 14px 16px;
+      background: #f7ecdd;
+      border-left: 5px solid var(--accent);
+      border-radius: 14px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid #d6c4ad;
+      text-decoration: none;
+      color: var(--accent-dark);
+      font-weight: 800;
+      background: #fff;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #f7ecdd;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 320px;
+      border: 0;
+      border-radius: 22px;
+      background: #eee;
+    }
+
+    .note {
+      margin-top: 24px;
+      padding: 16px 18px;
+      color: var(--muted);
+      border: 1px dashed #d6c4ad;
+      border-radius: 18px;
+      background: rgba(255, 250, 242, 0.7);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 18px;
+      }
+
+      header, .card {
+        border-radius: 22px;
+        padding: 20px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .card-header {
+        flex-direction: column;
+      }
+
+      .pill {
+        white-space: normal;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      iframe {
+        height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="eyebrow">0530 Banqiao Chat · 餐廳備選整理</div>
+      <h1>板橋三間餐廳快速比較</h1>
+      <p class="lead">
+        以「方便定位、好集合、適合邊吃邊聊」為主軸整理。預設集合點為板橋車站，可直接點擊導航。
+      </p>
+    </header>
+
+    <nav class="summary" aria-label="餐廳快速跳轉">
+      <a href="#shop-1"><strong>玖仰久仰 Jiuyang</strong><span>文青熱炒、茶食、氛圍感</span></a>
+      <a href="#shop-2"><strong>茗香園冰室</strong><span>平價港式、府中後站商圈</span></a>
+      <a href="#shop-3"><strong>瘋一鍋飲茶鍋物</strong><span>板橋車站環球 2F，最方便集合</span></a>
+    </nav>
+
+    
+      <article class="card" id="shop-1">
+        <div class="card-header">
+          <div>
+            <span class="badge">選項 1</span>
+            <h2>玖仰久仰 Jiuyang</h2>
+            <p class="subtitle">板橋久仰門市｜網美文青風熱炒店</p>
+          </div>
+          <span class="pill">文青熱炒 / 茶食 / 聚餐</span>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <span class="label">地址</span>
+            <p>新北市板橋區文化路一段188巷51號</p>
+          </div>
+          <div>
+            <span class="label">電話</span>
+            <p>02-2256-5613</p>
+          </div>
+          <div>
+            <span class="label">營業時間</span>
+            <p>11:00–21:30</p>
+          </div>
+          <div>
+            <span class="label">定位方式</span>
+            <p>靠近捷運新埔站；從板橋車站出發可用 Google Maps 導航，適合先約在捷運站再步行過去。</p>
+          </div>
+        </div>
+
+        <p class="vibe">白飯吃到飽、熱炒菜色、茶飲甜點都有，整體比較像咖啡廳氛圍的熱炒店。</p>
+
+        <div class="button-row">
+          <a class="btn primary" href="https://share.google/vaB0yuqwYldEPB3co" target="_blank" rel="noopener">開啟 Google Maps</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B5188%E5%B7%B751%E8%99%9F&travelmode=walking" target="_blank" rel="noopener">從板橋車站步行導航</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B5188%E5%B7%B751%E8%99%9F&travelmode=driving" target="_blank" rel="noopener">開車導航</a>
+          <a class="btn ghost" href="https://www.tony60533.com/jiu-yang/" target="_blank" rel="noopener">參考資料</a>
+        </div>
+
+        <iframe
+          title="玖仰久仰 Jiuyang Google Maps"
+          src="https://www.google.com/maps?q=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B5188%E5%B7%B751%E8%99%9F&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen>
+        </iframe>
+      </article>
+    
+      <article class="card" id="shop-2">
+        <div class="card-header">
+          <div>
+            <span class="badge">選項 2</span>
+            <h2>茗香園冰室</h2>
+            <p class="subtitle">板橋店｜平價港式料理</p>
+          </div>
+          <span class="pill">港式 / 茶餐廳 / 聚餐</span>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <span class="label">地址</span>
+            <p>新北市板橋區中山路一段7號2樓</p>
+          </div>
+          <div>
+            <span class="label">電話</span>
+            <p>02-2950-0029</p>
+          </div>
+          <div>
+            <span class="label">營業時間</span>
+            <p>11:30–21:30</p>
+          </div>
+          <div>
+            <span class="label">定位方式</span>
+            <p>位於板橋後站商圈、府中站附近；店面在 2 樓，樓下有公車站牌，可用 Google Maps 直接搜尋店名。</p>
+          </div>
+        </div>
+
+        <p class="vibe">港式茶餐廳路線，適合想吃乾炒牛河、點心、茶飲與多人分食。</p>
+
+        <div class="button-row">
+          <a class="btn primary" href="https://www.google.com/maps/search/?api=1&query=%E8%8C%97%E9%A6%99%E5%9C%92%E5%86%B0%E5%AE%A4+%E6%9D%BF%E6%A9%8B%E5%BA%97+%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B57%E8%99%9F2%E6%A8%93" target="_blank" rel="noopener">開啟 Google Maps</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B57%E8%99%9F2%E6%A8%93&travelmode=walking" target="_blank" rel="noopener">從板橋車站步行導航</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B57%E8%99%9F2%E6%A8%93&travelmode=driving" target="_blank" rel="noopener">開車導航</a>
+          <a class="btn ghost" href="https://fresh438.pixnet.net/blog/posts/4045291587" target="_blank" rel="noopener">參考資料</a>
+        </div>
+
+        <iframe
+          title="茗香園冰室 Google Maps"
+          src="https://www.google.com/maps?q=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B57%E8%99%9F2%E6%A8%93&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen>
+        </iframe>
+      </article>
+    
+      <article class="card" id="shop-3">
+        <div class="card-header">
+          <div>
+            <span class="badge">選項 3</span>
+            <h2>瘋一鍋飲茶鍋物</h2>
+            <p class="subtitle">板橋環球店｜飲茶鍋物</p>
+          </div>
+          <span class="pill">火鍋 / 飲茶 / 環球購物中心</span>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <span class="label">地址</span>
+            <p>新北市板橋區縣民大道二段7號2F</p>
+          </div>
+          <div>
+            <span class="label">電話</span>
+            <p>02-2968-9885</p>
+          </div>
+          <div>
+            <span class="label">營業時間</span>
+            <p>11:00–22:00</p>
+          </div>
+          <div>
+            <span class="label">定位方式</span>
+            <p>就在板橋車站環球購物中心 2 樓，最適合直接約板橋車站集合後一起上樓。</p>
+          </div>
+        </div>
+
+        <p class="vibe">火鍋搭配精緻飲品，環境新、位置最方便，適合不想移動太遠的聚餐。</p>
+
+        <div class="button-row">
+          <a class="btn primary" href="https://share.google/ha8mdkZwVMTPChEXJ" target="_blank" rel="noopener">開啟 Google Maps</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E7%B8%A3%E6%B0%91%E5%A4%A7%E9%81%93%E4%BA%8C%E6%AE%B57%E8%99%9F2F&travelmode=walking" target="_blank" rel="noopener">從板橋車站步行導航</a>
+          <a class="btn" href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%BF%E6%A9%8B%E8%BB%8A%E7%AB%99&destination=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E7%B8%A3%E6%B0%91%E5%A4%A7%E9%81%93%E4%BA%8C%E6%AE%B57%E8%99%9F2F&travelmode=driving" target="_blank" rel="noopener">開車導航</a>
+          <a class="btn ghost" href="https://iriseating.com/crazyeatpot/" target="_blank" rel="noopener">參考資料</a>
+        </div>
+
+        <iframe
+          title="瘋一鍋飲茶鍋物 Google Maps"
+          src="https://www.google.com/maps?q=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E7%B8%A3%E6%B0%91%E5%A4%A7%E9%81%93%E4%BA%8C%E6%AE%B57%E8%99%9F2F&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen>
+        </iframe>
+      </article>
+    
+
+    <section class="note">
+      <strong>使用提醒：</strong>
+      店家營業時間與現場候位可能會變動，出發前建議再點「開啟 Google Maps」確認即時狀態。
+      若要給朋友挑選，可以直接把這個 HTML 檔傳給對方，手機打開也能使用。
+    </section>
+
+    <footer>
+      Page name: 0530_banqiao_chat.html
+    </footer>
+  </main>
+</body>
+</html>
